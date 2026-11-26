@@ -67,6 +67,8 @@ The bracket is never stored. It's derived from the tournament's seed order plus 
    - In Authentication → Settings → Authorized domains, add `<username>.github.io` (and any custom domain).
 3. **Adapter.** Add `firebase-config.js` (config object), then replace the boot block with a Firestore adapter as described above. Keep the localStorage fallback for when Firebase can't load.
 4. **Scorekeeper sign-in.** Add a small "Scorekeeper sign in" button, e.g. in the League settings dialog opened from the title. Signed-out visitors get a **read-only** UI: hide or disable Add game, Play live's save, edit and delete buttons, the add-team form, the roster form, and the season editor. Show a friendly "Ask a grown-up to sign in to save games" message instead of failing silently.
+   - **Name/password scorekeepers** (for kids without Gmail, e.g. Jaxon): Alex creates `<name>@knee-hockey.invalid` in Authentication → Users and adds a matching `scorekeepers` doc. The site turns a plain name into that address. **Self sign-up must stay OFF** (Authentication → Settings → User actions), because the rules trust password accounts without a verified email.
+   - Live setup (2026-11-25): Firebase project `knee-hockey-c7f92`, site at https://ayork22.github.io/knee-hockey/, repo `ayork22/knee-hockey`. League data imported.
 5. **Security rules.** DONE differently from the sketch below. The live rules are in `firestore.rules`, and they check a private `scorekeepers/{lowercase email}` collection instead of listing emails in the rules, so no email is ever committed to this public repo. To add a scorekeeper, create a doc there in the console. The original sketch:
    ```
    rules_version = '2';
