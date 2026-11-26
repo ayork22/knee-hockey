@@ -7,7 +7,8 @@
 <meta name="apple-mobile-web-app-title" content="Knee Hockey">
 <meta name="theme-color" content="#aa3d32">
 <link rel="icon" href="assets/logo.png">
-<link rel="apple-touch-icon" href="assets/logo.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Knee Hockey League</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -229,6 +230,14 @@ details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;alig
  .flash{animation:fl .9s}@keyframes fl{0%,100%{filter:none}30%{filter:brightness(1.8)}}
 }
 @media(max-width:600px){.tr{flex-direction:row;width:100%;justify-content:space-between;align-items:center}.board{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.vs{display:none}.g .s{min-width:72px;font-size:26px}.step button{width:52px}.scorers{grid-template-columns:minmax(0,1fr)}.champ .mvp{margin-left:0;text-align:left}}
+/* read-only (signed-out) mode */
+body.ro .w{display:none!important}
+.ronote{display:none;margin:10px 0 0;padding:10px 14px;border-radius:12px;background:light-dark(#fbefd9,#3a2a14);color:var(--ink);font-weight:600}
+body.ro .ronote{display:block}
+.sync{cursor:pointer;border:0;color:inherit;font-family:inherit}
+.toast{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:99;background:var(--esp);color:#fff;border:2px solid var(--gold);padding:12px 18px;border-radius:14px;font-weight:600;max-width:min(92vw,520px);text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.skbox{margin-top:18px;padding:12px 14px;border:1px solid var(--line);border-radius:14px}
+.skbox .row{margin-top:8px}
 </style>
 </head>
 <body>
@@ -236,7 +245,7 @@ details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;alig
   <div class="ttl">
     <img class="logo" alt="Lafayette Locomotive YMCA logo" src="assets/logo.png">
     <div><div class="kick" id="kick">Locomotives knee hockey</div><h1 id="lname" title="League settings">Knee Hockey League</h1></div>
-    <div class="tr"><span class="sync" id="sync">Loading…</span><button class="live-btn" id="liveBtn">▶ Play live</button></div>
+    <div class="tr"><button type="button" class="sync" id="sync" title="Scorekeeper sign in">Loading…</button><button class="live-btn" id="liveBtn">▶ Play live</button></div>
   </div>
   <nav aria-label="Sections">
     <a href="#standings" data-v="standings">Standings</a>
@@ -249,7 +258,7 @@ details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;alig
 
 <main>
   <section id="v-standings">
-    <div class="hd"><h2 id="stTitle">Standings</h2><button class="go" data-newgame>+ Add game</button></div>
+    <div class="hd"><h2 id="stTitle">Standings</h2><button class="go w" data-newgame>+ Add game</button></div>
     <div class="row" style="margin:0 0 12px;justify-content:space-between"><div class="chips" data-scope></div><div class="chips" id="stMode"><button data-m="table" aria-pressed="true">Table</button><button data-m="power" aria-pressed="false">Power rankings</button></div></div>
     <p class="sinfo" id="sInfo"></p>
     <div class="card" id="standWrap"></div>
@@ -257,22 +266,22 @@ details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;alig
   </section>
 
   <section id="v-games" hidden>
-    <div class="hd"><h2>Game log</h2><button class="gold" data-live>▶ Play live</button><button class="go" data-newgame>+ Add game</button></div>
+    <div class="hd"><h2>Game log</h2><button class="gold" data-live>▶ Play live</button><button class="go w" data-newgame>+ Add game</button></div>
     <div class="chips" data-scope style="margin-bottom:10px"></div>
     <ul class="games" id="gameList"></ul>
   </section>
 
   <section id="v-tournaments" hidden>
     <div id="tHome">
-      <div class="hd"><h2>Tournaments</h2><button class="go" id="newT">+ New tournament</button></div>
+      <div class="hd"><h2>Tournaments</h2><button class="go w" id="newT">+ New tournament</button></div>
       <div class="tcards" id="tList"></div>
     </div>
     <div id="tDetail" hidden>
-      <div class="hd"><button id="tBack">‹ All</button><h2 id="tName"></h2><button class="warn" id="tDel">Delete tournament</button></div>
+      <div class="hd"><button id="tBack">‹ All</button><h2 id="tName"></h2><button class="warn w" id="tDel">Delete tournament</button></div>
       <div id="tChamp"></div>
       <div id="rrWrap"><h3 style="margin-top:4px">Round robin</h3><div class="rrgrid" id="rrList"></div><h3>Round robin standings</h3><div class="card" id="rrStand"></div></div>
       <div id="koWrap"><h3 id="koTitle">Bracket</h3><div class="card scroll"><div class="bracket" id="bracket"></div></div>
-      <p class="legend">Tap a gold-outlined matchup to play it. Tap a finished game to fix it (only until the next round is played).</p></div>
+      <p class="ronote">🔒 Ask a grown-up to sign in to save games.</p><p class="legend">Tap a gold-outlined matchup to play it. Tap a finished game to fix it (only until the next round is played).</p></div>
       <h3>Tournament scoring leaders</h3><div class="card" id="tLead"></div>
       <h3>Tournament standings</h3><div class="card" id="tStand"></div>
     </div>
@@ -281,7 +290,8 @@ details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;alig
   <section id="v-teams" hidden>
     <div id="teamHome">
       <div class="hd"><h2>Teams</h2></div>
-      <form class="card" id="tform">
+      <p class="ronote">🔒 Ask a grown-up to sign in to add teams and save games.</p>
+      <form class="card w" id="tform">
         <label for="tname" class="nm">Add teams — type one, or several with commas. Add the kid in parentheses.</label>
         <div class="row" style="margin-top:8px"><input type="text" id="tname" maxlength="200" placeholder="Pirates (Jaxon), Dragons (Murphy)" autocomplete="off" style="flex:1 1 220px;width:auto"><button class="go" type="submit">Add</button></div>
         <div class="msg" id="tMsg" role="status"></div>
@@ -315,8 +325,9 @@ details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;alig
       <input type="date" id="gdate" style="width:auto;flex:0 1 auto" aria-label="Game date">
     </div>
     <details id="scDet" style="margin-top:6px"><summary>Who scored? (optional)</summary><div class="scorers" id="scorers"></div></details>
+    <p class="ronote">🔒 Ask a grown-up to sign in to save games.</p>
     <div class="msg" id="gMsg" role="status"></div>
-    <div class="row"><button class="warn" id="gDel" hidden>Delete game</button><button id="gCancel" style="margin-left:auto">Cancel</button><button class="go" id="gSave">Final — save it</button></div>
+    <div class="row"><button class="warn w" id="gDel" hidden>Delete game</button><button id="gCancel" style="margin-left:auto">Cancel</button><button class="go w" id="gSave">Final — save it</button></div>
   </div>
 </div>
 
@@ -364,11 +375,19 @@ details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;alig
 <div class="dlg" id="lgDlg" hidden>
   <div class="card" role="dialog" aria-modal="true" aria-labelledby="lgTitle">
     <h2 id="lgTitle">League settings</h2>
-    <form id="renForm"><label for="renIn" class="nm">League name</label>
+    <form id="renForm" class="w"><label for="renIn" class="nm">League name</label>
     <div class="row" style="margin-top:6px"><input type="text" id="renIn" maxlength="40" style="flex:1 1 200px;width:auto"><button class="go" type="submit">Save</button></div></form>
     <div class="msg" id="lgMsg" role="status"></div>
-    <div class="hd" style="margin-top:18px"><h3 style="margin:0;flex:1">Seasons</h3><button class="go" id="nsGo">+ New season</button></div>
+    <div class="hd" style="margin-top:18px"><h3 style="margin:0;flex:1">Seasons</h3><button class="go w" id="nsGo">+ New season</button></div>
     <ul class="slist" id="sList"></ul>
+    <div class="skbox">
+      <h3 style="margin:0">Scorekeeper</h3>
+      <p class="legend" id="skInfo" style="margin:4px 0 0"></p>
+      <div class="row"><button class="go" id="skIn" hidden>Scorekeeper sign in</button><button id="skOut" hidden>Sign out</button></div>
+      <h3 style="margin:14px 0 0">Backup</h3>
+      <div class="row"><button id="bkExport">⬇ Export backup</button><button class="w" id="bkImport">⬆ Import backup</button><input type="file" id="bkFile" accept=".json,application/json" hidden></div>
+      <div class="msg" id="skMsg" role="status"></div>
+    </div>
     <div class="row"><button id="lgClose" style="margin-left:auto">Close</button></div>
   </div>
 </div>
@@ -405,6 +424,9 @@ details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;alig
 <div class="sheet" id="sheet" hidden></div>
 <div class="intro" id="intro" hidden></div>
 <div class="cele" id="cele" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="firebase-config.js"></script>
 
 <script>
 {
@@ -423,21 +445,31 @@ const fmtDay = d => new Date(d + 'T12:00').toLocaleDateString(undefined, { weekd
 
 let S = { name: 'Knee Hockey League', seasons: [{ id: 'Season 1', name: 'Season 1' }], cur: 'Season 1', teams: [], games: [], tournaments: [] };
 let db = null, scope = null, stMode = 'table', curT = null, curTeam = null;
+let canWrite = true, fbUser = null, FBX = null;   // FBX = loaded Firebase modules + handles
 
 // ---------- storage ----------
-function loadLocal(){ try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && Array.isArray(s.teams)) S = Object.assign(S, s); } catch(e){} S.seasons = normSeasons(S.seasons); if (!S.seasons.length) S.seasons = [{ id: 'Season 1', name: 'Season 1', start: '', end: '', teams: [], w: 2, otl: 1, t: 1 }]; if (!seasonObj(S.cur)) S.cur = S.seasons[0].id; }
+function loadLocal(k = KEY){ try { const s = JSON.parse(localStorage.getItem(k)); if (s && Array.isArray(s.teams)) S = Object.assign(S, s); } catch(e){} S.seasons = normSeasons(S.seasons); if (!S.seasons.length) S.seasons = [{ id: 'Season 1', name: 'Season 1', start: '', end: '', teams: [], w: 2, otl: 1, t: 1 }]; if (!seasonObj(S.cur)) S.cur = S.seasons[0].id; }
 function saveLocal(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} }
+const RO_MSG = '🔒 Ask a grown-up to sign in to save games.';
+let toastT = null;
+function toast(t){ const el = $('toast'); el.textContent = t; el.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => el.hidden = true, 4000); }
+function roStop(){ toast(RO_MSG); const e = new Error('read-only'); e.ro = true; throw e; }
+const why = (err, fallback) => err && (err.ro || err.code === 'permission-denied') ? RO_MSG : fallback;
+function setRO(){ document.body.classList.toggle('ro', !canWrite); }
 async function put(coll, obj){
+  if (!canWrite) roStop();
   if (db) return db.collection(coll).doc(obj.id).set(obj);
   const a = S[coll], i = a.findIndex(x => x.id === obj.id);
   if (i >= 0) a[i] = obj; else a.push(obj);
   saveLocal(); render();
 }
 async function del(coll, id){
+  if (!canWrite) roStop();
   if (db) return db.collection(coll).doc(id).delete();
   S[coll] = S[coll].filter(x => x.id !== id); saveLocal(); render();
 }
 async function setMeta(m){
+  if (!canWrite) roStop();
   const v = { name: S.name, seasons: S.seasons, cur: S.cur, ...m };
   if (db) return db.doc('meta/league').set(v);
   Object.assign(S, v); saveLocal(); render();
@@ -657,7 +689,7 @@ function renderTeamPage(T){
   const players = [...(T.players || [])].sort((a,b) => (+a.num || 999) - (+b.num || 999) || a.name.localeCompare(b.name));
   const gmap = {}; sc.forEach(r => gmap[r.p] = r);
   $('teamDetail').innerHTML = `
-    <div class="hd"><button data-back>‹ All teams</button><span style="flex:1"></span><button data-edit="${esc(T.id)}">Edit team</button></div>
+    <div class="hd"><button data-back>‹ All teams</button><span style="flex:1"></span><button class="w" data-edit="${esc(T.id)}">Edit team</button></div>
     <div class="thero" style="--c:${okColor(T.color)}"><span class="big">${okIcon(T.icon)}</span><div style="flex:1"><h2>${esc(T.name)}</h2>${T.owner ? `<div style="font:600 26px/1 Teko;margin-top:2px">${esc(T.owner)}</div>` : ''}<span class="rec">${esc(sName(S.cur))}: ${rs.w}-${rs.l}-${rs.otl + rs.ti} · ${rs.pts} pts</span></div></div>
     <div class="stats">
       <div class="stat"><b>${ra.w}-${ra.l}-${ra.otl + ra.ti}</b><span>All-time record</span></div>
@@ -673,8 +705,8 @@ function renderTeamPage(T){
     <h3>Vs every opponent</h3>
     <div class="card">${oppRows.length ? `<div class="scroll"><table><thead><tr><th class="l">Opponent</th><th>W</th><th>L</th><th>T</th><th>GF</th><th>GA</th></tr></thead><tbody>${oppRows.map(({o,r}) => `<tr><td class="l"><a class="tl nm" data-team="${esc(o)}">${tic(o)}${tn(o)}</a></td><td>${r.aw}</td><td>${r.bw}</td><td>${r.ti}</td><td>${r.ag}</td><td>${r.bg}</td></tr>`).join('')}</tbody></table></div>` : '<p class="legend" style="margin:0">No games yet.</p>'}</div>
     <h3>Roster</h3>
-    <form class="card" id="rForm"><div class="row" style="margin:0"><input type="number" id="rNum" placeholder="#" min="0" max="99" style="width:84px" aria-label="Jersey number"><input type="text" id="rName" maxlength="20" placeholder="Player name" style="flex:1 1 160px;width:auto" aria-label="Player name"><button class="go" type="submit">Add player</button></div>
-    <ul class="roster">${players.map(p => `<li><span class="num">${esc(p.num || '')}</span><span class="nm">${esc(p.name)}</span><span class="badge">${gmap[p.id] ? gmap[p.id].g : 0} G${gmap[p.id] && gmap[p.id].ht ? ' · 🎩' + gmap[p.id].ht : ''}</span><button class="warn" data-rdel="${esc(p.id)}">Remove</button></li>`).join('') || '<li class="legend">Add players to track who scores.</li>'}</ul></form>`;
+    <form class="card w" id="rForm"><div class="row" style="margin:0"><input type="number" id="rNum" placeholder="#" min="0" max="99" style="width:84px" aria-label="Jersey number"><input type="text" id="rName" maxlength="20" placeholder="Player name" style="flex:1 1 160px;width:auto" aria-label="Player name"><button class="go" type="submit">Add player</button></div>
+    <ul class="roster">${players.map(p => `<li><span class="num">${esc(p.num || '')}</span><span class="nm">${esc(p.name)}</span><span class="badge">${gmap[p.id] ? gmap[p.id].g : 0} G${gmap[p.id] && gmap[p.id].ht ? ' · 🎩' + gmap[p.id].ht : ''}</span><button class="warn w" data-rdel="${esc(p.id)}">Remove</button></li>`).join('') || '<li class="legend">Add players to track who scores.</li>'}</ul></form>`;
 }
 function renderTournaments(){
   const ts = [...S.tournaments].sort((a,b) => (b.date + b.ts).localeCompare(a.date + a.ts));
@@ -834,7 +866,7 @@ $('gSave').addEventListener('click', async () => {
   catch(e) { msg('gMsg', 'Couldn’t save that game — try again.'); }
   $('gSave').disabled = false;
 });
-$('gDel').addEventListener('click', e => armed(e.currentTarget, async () => { try { await del('games', G.id); closeDlg('gDlg'); } catch(err) { msg('gMsg', 'Couldn’t delete — try again.'); } }));
+$('gDel').addEventListener('click', e => armed(e.currentTarget, async () => { try { await del('games', G.id); closeDlg('gDlg'); } catch(err) { msg('gMsg', why(err, 'Couldn’t delete — try again.')); } }));
 $('gameList').addEventListener('click', e => openGameRow(e));
 $('teamDetail').addEventListener('click', e => { if (e.target.closest('[data-g]')) openGameRow(e); });
 $('h2hOut').addEventListener('click', e => openGameRow(e));
@@ -898,7 +930,7 @@ $('etForm').addEventListener('submit', async e => {
   e.preventDefault(); const n = $('etName').value.trim();
   if (!n) return msg('etMsg', 'Name can’t be blank.');
   if (S.teams.some(t => t.id !== ET.id && t.name.toLowerCase() === n.toLowerCase())) return msg('etMsg', 'Another team already has that name.');
-  try { await put('teams', { ...ET, name: n, owner: $('etOwner').value.trim().slice(0,20), color: etColor, icon: etIcon }); closeDlg('etDlg'); } catch(err) { msg('etMsg', 'Couldn’t save — try again.'); }
+  try { await put('teams', { ...ET, name: n, owner: $('etOwner').value.trim().slice(0,20), color: etColor, icon: etIcon }); closeDlg('etDlg'); } catch(err) { msg('etMsg', why(err, 'Couldn’t save — try again.')); }
 });
 $('etDel').addEventListener('click', e => {
   if (S.games.some(g => g.a === ET.id || g.b === ET.id) || S.tournaments.some(t => t.teams.includes(ET.id))) return msg('etMsg', 'This team has games or a tournament. Delete those first.');
@@ -926,7 +958,7 @@ $('ntForm').addEventListener('submit', async e => {
   else if (document.querySelector('input[name=seed]:checked').value === 'rand') { for (let i = ids.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [ids[i], ids[j]] = [ids[j], ids[i]]; } }
   else ids = standings(ids, S.games).map(r => r.t.id);
   const t = { id: mkId(), name, teams: ids, format, adv, date: today(), ts: new Date().toISOString(), season: seasonFor(today()) };
-  try { await put('tournaments', t); closeDlg('ntDlg'); curT = t.id; render(); } catch(err) { msg('ntMsg', 'Couldn’t create it — try again.'); }
+  try { await put('tournaments', t); closeDlg('ntDlg'); curT = t.id; render(); } catch(err) { msg('ntMsg', why(err, 'Couldn’t create it — try again.')); }
 });
 $('tList').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; curT = b.dataset.t; renderTournaments(); window.scrollTo(0,0); });
 $('tBack').addEventListener('click', () => { curT = null; renderTournaments(); });
@@ -951,11 +983,13 @@ $('tDel').addEventListener('click', e => armed(e.currentTarget, async () => {
 // ---------- league settings ----------
 function renderSeasonList(){
   const list = [...S.seasons].sort((a,b) => (b.start || '').localeCompare(a.start || ''));
-  $('sList').innerHTML = list.map(o => { const n = S.games.filter(g => seasonOf(g) === o.id).length; return `<li class="${o.id === S.cur ? 'on' : ''}"><span class="nm">${esc(o.name)}${o.id === S.cur ? ' <span class="badge">Current</span>' : ''}</span><span class="legend">${esc(fmtRange(o))} · ${n} games · W${o.w}/OTL${o.otl}/T${o.t}${o.teams.length ? ' · ' + o.teams.length + ' teams' : ''}</span><button type="button" data-se="${esc(o.id)}">Edit</button></li>`; }).join('');
+  $('sList').innerHTML = list.map(o => { const n = S.games.filter(g => seasonOf(g) === o.id).length; return `<li class="${o.id === S.cur ? 'on' : ''}"><span class="nm">${esc(o.name)}${o.id === S.cur ? ' <span class="badge">Current</span>' : ''}</span><span class="legend">${esc(fmtRange(o))} · ${n} games · W${o.w}/OTL${o.otl}/T${o.t}${o.teams.length ? ' · ' + o.teams.length + ' teams' : ''}</span><button type="button" class="w" data-se="${esc(o.id)}">Edit</button></li>`; }).join('');
 }
-$('lname').addEventListener('click', () => { $('renIn').value = S.name; $('lgMsg').textContent = ''; renderSeasonList(); openDlg('lgDlg'); });
+function openSettings(){ $('renIn').value = S.name; $('lgMsg').textContent = ''; $('skMsg').textContent = ''; renderSeasonList(); renderSK(); openDlg('lgDlg'); }
+$('lname').addEventListener('click', openSettings);
+$('sync').addEventListener('click', openSettings);
 $('lgClose').addEventListener('click', () => closeDlg('lgDlg'));
-$('renForm').addEventListener('submit', async e => { e.preventDefault(); const n = $('renIn').value.trim(); if (!n) return; try { await setMeta({ name: n }); msg('lgMsg', 'Saved!', true); } catch(err){ msg('lgMsg', 'Couldn’t save.'); } });
+$('renForm').addEventListener('submit', async e => { e.preventDefault(); const n = $('renIn').value.trim(); if (!n) return; try { await setMeta({ name: n }); msg('lgMsg', 'Saved!', true); } catch(err){ msg('lgMsg', why(err, 'Couldn’t save.')); } });
 let SE = null;
 function ruleChips(){ document.querySelectorAll('[data-rule]').forEach(c => c.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.v === SE[c.dataset.rule]))); }
 function openSeason(o){
@@ -989,7 +1023,7 @@ $('sForm').addEventListener('submit', async e => {
   const seasons = SE.isNew ? [...S.seasons, o] : S.seasons.map(x => x.id === o.id ? o : x);
   const cur = $('sCur').checked ? o.id : S.cur;
   try { await setMeta({ seasons, cur }); if (cur === o.id) scope = null; closeDlg('sDlg'); renderSeasonList(); msg('lgMsg', SE.isNew ? name + ' is ready!' : 'Season saved.', true); }
-  catch(err) { msg('sMsg', 'Couldn’t save — try again.'); }
+  catch(err) { msg('sMsg', why(err, 'Couldn’t save — try again.')); }
 });
 $('sDel').addEventListener('click', e => {
   if (S.seasons.length < 2) return msg('sMsg', 'You need at least one season.');
@@ -1097,7 +1131,7 @@ $('lv').addEventListener('click', async e => {
     if (L.tid) { g.tid = L.tid; if (L.rr) g.stage = 'rr'; else { g.r = L.r; g.k = L.k; } }
     b.disabled = true;
     try { await put('games', g); clearInterval(ltimer); L = null; saveL(); drawLive(); startTimer(); afterSave(g, true); }
-    catch(err) { b.disabled = false; alertLive('Couldn’t save — try again.'); }
+    catch(err) { b.disabled = false; alertLive(why(err, 'Couldn’t save — try again.') + (err && err.ro ? ' This game stays here until then.' : '')); }
   }
 });
 function alertLive(t){ const c = document.querySelector('.lvc'); if (!c) return; let m = $('lvAl'); if (!m) { m = document.createElement('div'); m.id = 'lvAl'; m.className = 'msg bad'; m.style.cssText = 'width:100%;text-align:center;color:#ff8a7a'; c.appendChild(m); } m.textContent = t; }
@@ -1110,29 +1144,123 @@ $('sheet').addEventListener('click', e => {
 $('liveBtn').addEventListener('click', () => liveSetup());
 document.querySelectorAll('[data-live]').forEach(b => b.addEventListener('click', () => liveSetup()));
 
+// ---------- backup (export / import) ----------
+const BK_COLLS = ['teams', 'games', 'tournaments'];
+function backupObj(){
+  return { _format: "Knee Hockey League backup v3 — same shape as the app's localStorage key 'kh-locos-v3' (S object). Firestore: teams/{id}, games/{id}, tournaments/{id}, meta/league = {name, seasons, cur}.",
+    exportedAt: today(), name: S.name, cur: S.cur, seasons: S.seasons, teams: S.teams, games: S.games, tournaments: S.tournaments };
+}
+$('bkExport').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(backupObj(), null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'knee-hockey-backup-' + today() + '.json';
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  msg('skMsg', 'Backup downloaded.', true);
+});
+$('bkImport').addEventListener('click', e => armed(e.currentTarget, () => { $('bkFile').value = ''; $('bkFile').click(); }));
+$('bkFile').addEventListener('change', async () => {
+  const f = $('bkFile').files[0]; if (!f) return;
+  let d; try { d = JSON.parse(await f.text()); } catch(err) { return msg('skMsg', 'That file isn’t a league backup.'); }
+  try { const n = await importBackup(d); msg('skMsg', `Imported ${n.teams} teams, ${n.games} games, ${n.tournaments} tournaments.`, true); renderSeasonList(); }
+  catch(err) { msg('skMsg', err && err.bad ? 'That file isn’t a league backup.' : why(err, 'Import didn’t finish — try again.')); }
+});
+async function importBackup(d){
+  if (!canWrite) roStop();
+  const okDoc = x => x && typeof x === 'object' && typeof x.id === 'string' && x.id && x.id.length < 200 && !x.id.includes('/') && !/^\.\.?$|^__.*__$/.test(x.id);
+  const B = {}; BK_COLLS.forEach(c => B[c] = (Array.isArray(d && d[c]) ? d[c] : []).filter(okDoc));
+  const seasons = normSeasons(d && d.seasons);
+  if (!seasons.length || !Array.isArray(d.teams)) { const e = new Error('bad'); e.bad = true; throw e; }
+  const meta = { name: String(d.name || S.name || 'Knee Hockey League').slice(0, 40), seasons, cur: seasons.some(x => x.id === d.cur) ? String(d.cur) : seasons[0].id };
+  const counts = { teams: B.teams.length, games: B.games.length, tournaments: B.tournaments.length };
+  if (!db) { Object.assign(S, B, meta); saveLocal(); render(); return counts; }
+  const { F, fdb } = FBX, ops = [];
+  BK_COLLS.forEach(c => {
+    const keep = new Set(B[c].map(x => x.id));
+    S[c].forEach(x => { if (!keep.has(x.id)) ops.push(b => b.delete(F.doc(fdb, c, x.id))); });
+    B[c].forEach(x => ops.push(b => b.set(F.doc(fdb, c, x.id), x)));
+  });
+  ops.push(b => b.set(F.doc(fdb, 'meta', 'league'), meta));
+  for (let i = 0; i < ops.length; i += 400) { const b = F.writeBatch(fdb); ops.slice(i, i + 400).forEach(op => op(b)); await b.commit(); }
+  return counts;
+}
+
 // ---------- boot ----------
-loadLocal();
+const FBC = window.KH_FIREBASE || null;
+const FB_URL = 'https://www.gstatic.com/firebasejs/13.3.0/';
+const CKEY = 'kh-fb-cache-v1';           // last league data seen from Firestore, for a fast first paint
+let fbState = FBC ? 'loading' : 'off';   // off | loading | live | fail
+if (FBC) { loadLocal(CKEY); canWrite = false; } else loadLocal();
 try { const l = JSON.parse(localStorage.getItem(LKEY)); if (l && l.stage) { L = l; if (L.running) { L.left = leftNow(); L.running = false; } $('live').hidden = false; drawLive(); startTimer(); } } catch(e){}
-render(); show(); $('sync').textContent = 'Saved on this device';
+function pill(){
+  $('sync').textContent = fbState === 'off' ? 'Saved on this device' : fbState === 'loading' ? 'Connecting…' : fbState === 'fail' ? 'Offline · view only'
+    : canWrite ? 'Live ✓ · Scorekeeper' : 'Live ✓ · 🔒 View only';
+}
+function renderSK(){
+  const ready = fbState === 'live';
+  $('skIn').hidden = !ready || !!fbUser; $('skOut').hidden = !ready || !fbUser;
+  $('skInfo').textContent = fbState === 'off' ? 'This copy saves on this device only.'
+    : fbState === 'loading' ? 'Connecting to the league…'
+    : fbState === 'fail' ? 'Can’t reach the league right now, so saving is off. Try reloading.'
+    : !fbUser ? 'Anyone can look. Grown-up scorekeepers sign in to save games.'
+    : canWrite ? `Signed in as ${fbUser.email}. You can save games.`
+    : `${fbUser.email || 'This account'} isn’t a scorekeeper yet. Ask Alex to add it.`;
+}
+setRO(); render(); show(); pill();
 startTimer();
+
+// Firestore adapter: same collection().doc().set()/delete()/onSnapshot() surface the app already uses.
+function fsAdapter(F, fdb){
+  const dref = r => ({ set: v => F.setDoc(r, v), delete: () => F.deleteDoc(r),
+    onSnapshot: (ok, bad) => F.onSnapshot(r, x => ok({ exists: x.exists(), data: () => x.data() }), bad) });
+  return {
+    collection: c => ({ doc: id => dref(F.doc(fdb, c, id)), onSnapshot: (ok, bad) => F.onSnapshot(F.collection(fdb, c), ok, bad) }),
+    doc: path => dref(F.doc(fdb, path)),
+  };
+}
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error('timeout')), ms))]);
+let cacheT = null;
+const saveCache = () => { clearTimeout(cacheT); cacheT = setTimeout(() => { try { localStorage.setItem(CKEY, JSON.stringify({ name: S.name, seasons: S.seasons, cur: S.cur, teams: S.teams, games: S.games, tournaments: S.tournaments })); } catch(e){} }, 500); };
+
 (async () => {
+  if (!FBC) return;
   try {
-    if (!window.claude || !window.claude.use) return;
-    const d = await window.claude.use('db'); if (!d) return;
-    db = d; $('sync').textContent = 'Connecting…';
+    // Loaded lazily, so a Firebase outage never blanks the page: it just stays view-only on cached data.
+    const [A, F, U] = await withTimeout(Promise.all(['app', 'firestore', 'auth'].map(m => import(FB_URL + 'firebase-' + m + '.js'))), 15000);
+    const app = A.initializeApp(FBC);
+    const fdb = F.initializeFirestore(app, { ignoreUndefinedProperties: true });
+    const auth = U.getAuth(app);
+    FBX = { F, U, fdb, auth };
+    db = fsAdapter(F, fdb);
     const got = {};
-    const timer = setTimeout(() => $('sync').textContent = 'Can’t reach league data yet', 10000);
+    const timer = setTimeout(() => { if (fbState !== 'live') $('sync').textContent = 'Can’t reach league data yet'; }, 10000);
     const fail = () => { clearTimeout(timer); $('sync').textContent = 'Sync paused — reopen page'; };
     const sub = coll => db.collection(coll).onSnapshot(s => {
       S[coll] = s.docs.map(x => x.data()).filter(x => x && x.id);
       if (!s.metadata.fromCache) got[coll] = 1;
-      if (got.teams && got.games && got.tournaments) { clearTimeout(timer); $('sync').textContent = 'Live ✓'; }
-      render(); if (L && L.stage === 'setup') drawLive();
+      if (got.teams && got.games && got.tournaments && fbState !== 'live') { clearTimeout(timer); fbState = 'live'; pill(); renderSK(); }
+      saveCache(); render(); if (L && L.stage === 'setup') drawLive();
     }, fail);
     sub('teams'); sub('games'); sub('tournaments');
-    db.doc('meta/league').onSnapshot(x => { const v = x.exists && x.data(); if (v) { if (v.name) S.name = String(v.name); const ns = normSeasons(v.seasons); if (ns.length) S.seasons = ns; if (v.cur) S.cur = String(v.cur); render(); } }, () => {});
-  } catch(e) { db = null; $('sync').textContent = 'Saved on this device'; }
+    db.doc('meta/league').onSnapshot(x => { const v = x.exists && x.data(); if (v) { if (v.name) S.name = String(v.name); const ns = normSeasons(v.seasons); if (ns.length) S.seasons = ns; if (v.cur) S.cur = String(v.cur); if (!seasonObj(S.cur)) S.cur = S.seasons[0].id; saveCache(); render(); } }, () => {});
+    U.onAuthStateChanged(auth, async u => {
+      fbUser = u; let ok = false;
+      if (u && u.email) { try { ok = (await F.getDoc(F.doc(fdb, 'scorekeepers', u.email.toLowerCase()))).exists(); } catch(e) { ok = false; } }
+      canWrite = ok; setRO(); pill(); renderSK();
+    });
+    U.getRedirectResult(auth).catch(() => {});
+  } catch(e) { db = null; FBX = null; canWrite = false; fbState = 'fail'; setRO(); pill(); renderSK(); }
 })();
+
+$('skIn').addEventListener('click', async () => {
+  if (!FBX) return;
+  const { U, auth } = FBX, pr = new U.GoogleAuthProvider();
+  pr.setCustomParameters({ prompt: 'select_account' });
+  try { await U.signInWithPopup(auth, pr); }
+  catch(e) {
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment') return U.signInWithRedirect(auth, pr);
+    if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') msg('skMsg', 'Sign-in didn’t work — try again.');
+  }
+});
+$('skOut').addEventListener('click', async () => { if (FBX) { await FBX.U.signOut(FBX.auth); msg('skMsg', 'Signed out. The site is view-only now.', true); } });
 }
 </script>
 </body>
