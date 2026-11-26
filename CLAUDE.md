@@ -17,7 +17,7 @@ It was built as a Claude.ai artifact and is now moving to **GitHub Pages**, with
 | Path | What it is |
 |---|---|
 | `index.html` | The whole app: HTML, CSS and vanilla JS in one file. No build step. Fonts load from Google Fonts. |
-| `assets/logo.png` | Lafayette Locomotive YMCA logo, cropped from a screenshot (160px, a bit soft). **Swap in the original high-res file when Alex provides it.** |
+| `assets/logo.png` | Lafayette Locomotive YMCA logo (400px, from the club's Athlete Tracker page). `assets/icon-*.png` are the home-screen icons: the logo on brick red. |
 | `data/league-export.json` | The full league data as of 2026-11-25. |
 | `.nojekyll` | Tells Pages to serve the files as they are. |
 
