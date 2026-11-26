@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Knee Hockey">
 <meta name="theme-color" content="#aa3d32">
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="assets/logo.png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
@@ -72,7 +73,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{ou
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chips button{padding:8px 14px;border-radius:99px;font-size:15px}
 .chips button[aria-pressed=true]{background:var(--esp);color:#fff}
-select,input[type=text],input[type=password],input[type=date],input[type=number]{font:16px Barlow;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);min-height:44px;width:100%}
+select,input[type=text],input[type=password],input[type=date],input[type=time],input[type=number]{font:16px Barlow;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);min-height:44px;width:100%}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
 .chk{display:flex;align-items:center;gap:8px;min-height:44px;font-weight:600}
 .chk input{width:24px;height:24px;accent-color:var(--red)}
@@ -230,6 +231,18 @@ details summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;alig
  .flash{animation:fl .9s}@keyframes fl{0%,100%{filter:none}30%{filter:brightness(1.8)}}
 }
 @media(max-width:600px){.tr{flex-direction:row;width:100%;justify-content:space-between;align-items:center}.board{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.vs{display:none}.g .s{min-width:72px;font-size:26px}.step button{width:52px}.scorers{grid-template-columns:minmax(0,1fr)}.champ .mvp{margin-left:0;text-align:left}}
+.g .by{display:block;font-size:12px;opacity:.75;margin-top:2px}
+.sch{display:flex;align-items:center;gap:12px;padding:12px 14px;flex-wrap:wrap}
+.sch .when{display:flex;flex-direction:column;min-width:92px;font:600 22px/1 Teko}
+.sch .when span{font:14px Barlow;color:var(--mute);margin-top:2px}
+.sch .who{flex:1 1 220px;display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-weight:700}
+.sch .who .vs2{font:600 18px Teko;color:var(--mute);margin:0 4px}
+.sch .who .legend{flex-basis:100%;margin:0;font-weight:400}
+.sch.past{opacity:.7}
+.watch-btn{background:transparent;color:#fff;border:2px solid var(--gold);font:600 22px/1 Teko;padding:10px 14px 6px}
+.watch-btn .dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#ff4d3d;margin-right:6px;vertical-align:1px;animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+.wlast{color:#cbb8ad;text-align:center;font-size:18px;width:100%}
 /* read-only (signed-out) mode */
 body.ro .w{display:none!important}
 .ronote{display:none;margin:10px 0 0;padding:10px 14px;border-radius:12px;background:light-dark(#fbefd9,#3a2a14);color:var(--ink);font-weight:600}
@@ -245,7 +258,7 @@ body.ro .ronote{display:block}
   <div class="ttl">
     <img class="logo" alt="Lafayette Locomotive YMCA logo" src="assets/logo.png">
     <div><div class="kick" id="kick">Locomotives knee hockey</div><h1 id="lname" title="League settings">Knee Hockey League</h1></div>
-    <div class="tr"><button type="button" class="sync" id="sync" title="Scorekeeper sign in">Loading…</button><button class="live-btn" id="liveBtn">▶ Play live</button></div>
+    <div class="tr"><button type="button" class="sync" id="sync" title="Scorekeeper sign in">Loading…</button><button class="live-btn" id="liveBtn">▶ Play live</button><button class="watch-btn" id="watchBtn" hidden><span class="dot"></span>Watch live</button></div>
   </div>
   <nav aria-label="Sections">
     <a href="#standings" data-v="standings">Standings</a>
@@ -267,6 +280,10 @@ body.ro .ronote{display:block}
 
   <section id="v-games" hidden>
     <div class="hd"><h2>Game log</h2><button class="gold" data-live>▶ Play live</button><button class="go w" data-newgame>+ Add game</button></div>
+    <div id="schWrap">
+      <div class="hd" style="margin:0 0 8px"><h3 style="margin:0;flex:1">Coming up</h3><button class="w" id="schNew">+ Schedule game</button></div>
+      <ul class="games" id="schList" style="margin-bottom:18px"></ul>
+    </div>
     <div class="chips" data-scope style="margin-bottom:10px"></div>
     <ul class="games" id="gameList"></ul>
   </section>
@@ -420,6 +437,22 @@ body.ro .ronote{display:block}
   </form>
 </div>
 
+<!-- schedule a game -->
+<div class="dlg" id="schDlg" hidden>
+  <form class="card" id="schForm" role="dialog" aria-modal="true" aria-labelledby="schTitle">
+    <h2 id="schTitle">Schedule a game</h2>
+    <div class="row" style="margin-top:0"><select id="schA" aria-label="Team one" style="flex:1 1 160px;width:auto"></select><span class="nm">vs</span><select id="schB" aria-label="Team two" style="flex:1 1 160px;width:auto"></select></div>
+    <div class="row"><label style="flex:1 1 160px"><span class="nm">Day</span><input type="date" id="schDate" style="margin-top:4px"></label><label style="flex:1 1 140px"><span class="nm">Time (optional)</span><input type="time" id="schTime" style="margin-top:4px"></label></div>
+    <label class="nm" for="schNote" style="display:block;margin-top:10px">Note (optional)</label>
+    <input type="text" id="schNote" maxlength="40" placeholder="At Murphy’s house" style="margin-top:6px">
+    <div class="msg" id="schMsg" role="status"></div>
+    <div class="row"><button type="button" id="schCancel" style="margin-left:auto">Cancel</button><button class="go" type="submit">Add to schedule</button></div>
+  </form>
+</div>
+
+<!-- second-screen scoreboard -->
+<div class="ov" id="watch" hidden><div class="lv" id="wv"></div></div>
+
 <!-- live overlay -->
 <div class="ov" id="live" hidden><div class="lv" id="lv"></div></div>
 <div class="sheet" id="sheet" hidden></div>
@@ -444,9 +477,9 @@ const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOff
 const daysAgo = n => { const d = new Date(Date.now() - n*864e5); return new Date(d - d.getTimezoneOffset()*6e4).toISOString().slice(0,10); };
 const fmtDay = d => new Date(d + 'T12:00').toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' });
 
-let S = { name: 'Knee Hockey League', seasons: [{ id: 'Season 1', name: 'Season 1' }], cur: 'Season 1', teams: [], games: [], tournaments: [] };
+let S = { name: 'Knee Hockey League', seasons: [{ id: 'Season 1', name: 'Season 1' }], cur: 'Season 1', teams: [], games: [], tournaments: [], schedule: [] };
 let db = null, scope = null, stMode = 'table', curT = null, curTeam = null;
-let canWrite = true, fbUser = null, FBX = null;   // FBX = loaded Firebase modules + handles
+let canWrite = true, fbUser = null, FBX = null, skName = '';   // FBX = loaded Firebase modules + handles; skName = scorekeeper's display name
 
 // ---------- storage ----------
 function loadLocal(k = KEY){ try { const s = JSON.parse(localStorage.getItem(k)); if (s && Array.isArray(s.teams)) S = Object.assign(S, s); } catch(e){} S.seasons = normSeasons(S.seasons); if (!S.seasons.length) S.seasons = [{ id: 'Season 1', name: 'Season 1', start: '', end: '', teams: [], w: 2, otl: 1, t: 1 }]; if (!seasonObj(S.cur)) S.cur = S.seasons[0].id; }
@@ -457,22 +490,31 @@ function toast(t){ const el = $('toast'); el.textContent = t; el.hidden = false;
 function roStop(){ toast(RO_MSG); const e = new Error('read-only'); e.ro = true; throw e; }
 const why = (err, fallback) => err && (err.ro || err.code === 'permission-denied') ? RO_MSG : fallback;
 function setRO(){ document.body.classList.toggle('ro', !canWrite); }
+// Firestore applies writes locally right away and syncs them when it can (offline-safe).
+// Don't make the UI wait for the server: wait briefly so quick errors still surface, then move on.
+let pending = 0;
+function track(p){
+  pending++; pill();
+  p.catch(e => toast(why(e, 'A save didn’t reach the league. Check the internet, then try again.'))).finally(() => { pending--; pill(); });
+  return Promise.race([p, new Promise(r => setTimeout(r, 1200))]);
+}
 async function put(coll, obj){
   if (!canWrite) roStop();
-  if (db) return db.collection(coll).doc(obj.id).set(obj);
+  if (coll === 'games' && db && skName) obj = { ...obj, by: skName };
+  if (db) return track(db.collection(coll).doc(obj.id).set(obj));
   const a = S[coll], i = a.findIndex(x => x.id === obj.id);
   if (i >= 0) a[i] = obj; else a.push(obj);
   saveLocal(); render();
 }
 async function del(coll, id){
   if (!canWrite) roStop();
-  if (db) return db.collection(coll).doc(id).delete();
+  if (db) return track(db.collection(coll).doc(id).delete());
   S[coll] = S[coll].filter(x => x.id !== id); saveLocal(); render();
 }
 async function setMeta(m){
   if (!canWrite) roStop();
   const v = { name: S.name, seasons: S.seasons, cur: S.cur, ...m };
-  if (db) return db.doc('meta/league').set(v);
+  if (db) return track(db.doc('meta/league').set(v));
   Object.assign(S, v); saveLocal(); render();
 }
 
@@ -651,7 +693,7 @@ function gameRow(g){
   const tg = T ? `<span class="tag">${esc(T.name)}${g.stage === 'rr' ? ' · RR' : ''}</span>` : '';
   const per = {}; (g.goals || []).forEach(x => { if (x.p) per[x.p] = (per[x.p] || 0) + 1; });
   const ht = Object.entries(per).filter(([,n]) => n >= 3).map(([p]) => `<span class="tag">🎩 ${esc(pname(p))}</span>`).join('');
-  return `<li><button class="card g" data-g="${esc(g.id)}"><span class="t r ${bw?'lo':''}"><span>${tn(g.a)}</span>${tic(g.a)}</span><span class="s">${g.sa} – ${g.sb}</span><span class="t ${aw?'lo':''}">${tic(g.b)}<span>${tn(g.b)}</span></span><span class="meta">${g.ot ? 'OT/SO' : 'Final'}${tg}${ht}</span></button></li>`;
+  return `<li><button class="card g" data-g="${esc(g.id)}"><span class="t r ${bw?'lo':''}"><span>${tn(g.a)}</span>${tic(g.a)}</span><span class="s">${g.sa} – ${g.sb}</span><span class="t ${aw?'lo':''}">${tic(g.b)}<span>${tn(g.b)}</span></span><span class="meta">${g.ot ? 'OT/SO' : 'Final'}${tg}${ht}${g.by ? `<span class="by">entered by ${esc(String(g.by).slice(0,20))}</span>` : ''}</span></button></li>`;
 }
 function renderGames(){
   const gs = scoped(S.games).sort(byTime).reverse();
@@ -745,7 +787,7 @@ function render(){
   $('lname').textContent = S.name || 'Knee Hockey League';
   $('kick').textContent = 'Locomotives knee hockey · ' + sName(S.cur);
   document.title = S.name || 'Knee Hockey League';
-  scopeChips(); renderStandings(); renderGames(); renderTeams(); renderTournaments(); renderLeaders();
+  scopeChips(); renderStandings(); renderSchedule(); renderGames(); renderTeams(); renderTournaments(); renderLeaders(); renderWatchBtn();
 }
 
 // ---------- navigation ----------
@@ -863,8 +905,8 @@ $('gSave').addEventListener('click', async () => {
   const g = { id: G.id || mkId(), a, b, sa: G.sa, sb: G.sb, ot: $('ot').checked, date: $('gdate').value || today(), ts: G.ts || new Date().toISOString(), season: (G.id && G.season && G.date === ($('gdate').value || today())) ? G.season : seasonFor($('gdate').value || today()), goals };
   if (G.tid) { g.tid = G.tid; if (G.stage === 'rr') g.stage = 'rr'; else { g.r = G.r; g.k = G.k; } }
   $('gSave').disabled = true;
-  try { await saveGame(g, !G.id); closeDlg('gDlg'); }
-  catch(e) { msg('gMsg', 'Couldn’t save that game — try again.'); }
+  try { await saveGame(g, !G.id); closeDlg('gDlg'); if (G.sid) del('schedule', G.sid).catch(() => {}); }
+  catch(e) { msg('gMsg', why(e, 'Couldn’t save that game — try again.')); }
   $('gSave').disabled = false;
 });
 $('gDel').addEventListener('click', e => armed(e.currentTarget, async () => { try { await del('games', G.id); closeDlg('gDlg'); } catch(err) { msg('gMsg', why(err, 'Couldn’t delete — try again.')); } }));
@@ -1036,7 +1078,7 @@ $('sDel').addEventListener('click', e => {
 // ---------- LIVE GAME ----------
 const LKEY = 'kh-live-v1';
 let L = null, ltimer = null;
-const saveL = () => { try { L ? localStorage.setItem(LKEY, JSON.stringify(L)) : localStorage.removeItem(LKEY); } catch(e){} };
+const saveL = () => { try { L ? localStorage.setItem(LKEY, JSON.stringify(L)) : localStorage.removeItem(LKEY); } catch(e){} broadcastLive(); };
 const fmtClock = s => { s = Math.max(0, Math.ceil(s)); return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); };
 const perName = p => p <= 3 ? ['1st','2nd','3rd'][p-1] + ' period' : 'Overtime';
 function leftNow(){ return L.running ? L.left - (Date.now() - L.t0)/1000 : L.left; }
@@ -1123,7 +1165,7 @@ $('lv').addEventListener('click', async e => {
     sh.dataset.side = side; sh.hidden = false; return;
   }
   if (b.id === 'lvUndo') { const g = L.goals.pop(); if (g) { if (g.t === L.a) L.sa--; else L.sb--; if (L.stage === 'over' && L.period > 3) L.stage = 'play'; } saveL(); drawLive(); return; }
-  if (b.id === 'lvQuit') { armed(b, () => { clearInterval(ltimer); L = null; saveL(); drawLive(); }); return; }
+  if (b.id === 'lvQuit') { armed(b, () => { clearInterval(ltimer); L = null; saveL(); drawLive(); liveEnd(null); }); return; }
   if (b.id === 'lvEnd') { L.left = leftNow(); L.running = false; L.stage = 'over'; saveL(); drawLive(); return; }
   if (b.id === 'lvBack') { L.stage = 'play'; saveL(); drawLive(); return; }
   if (b.id === 'lvSave') {
@@ -1131,7 +1173,8 @@ $('lv').addEventListener('click', async e => {
     const g = { id: mkId(), a: L.a, b: L.b, sa: L.sa, sb: L.sb, ot: L.period > 3 && L.sa !== L.sb, date: L.date || today(), ts: new Date().toISOString(), season: seasonFor(L.date || today()), goals: L.goals };
     if (L.tid) { g.tid = L.tid; if (L.rr) g.stage = 'rr'; else { g.r = L.r; g.k = L.k; } }
     b.disabled = true;
-    try { await put('games', g); clearInterval(ltimer); L = null; saveL(); drawLive(); startTimer(); afterSave(g, true); }
+    const sid = L.sid;
+    try { await put('games', g); liveEnd(g); clearInterval(ltimer); L = null; saveL(); drawLive(); startTimer(); afterSave(g, true); if (sid) del('schedule', sid).catch(() => {}); }
     catch(err) { b.disabled = false; alertLive(why(err, 'Couldn’t save — try again.') + (err && err.ro ? ' This game stays here until then.' : '')); }
   }
 });
@@ -1145,11 +1188,120 @@ $('sheet').addEventListener('click', e => {
 $('liveBtn').addEventListener('click', () => liveSetup());
 document.querySelectorAll('[data-live]').forEach(b => b.addEventListener('click', () => liveSetup()));
 
+// ---------- schedule (upcoming games) ----------
+const fmtTime = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(t || ''); return m ? new Date(2000, 0, 1, +m[1], +m[2]).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) : ''; };
+const okDate = d => /^\d{4}-\d{2}-\d{2}$/.test(d || '');
+function renderSchedule(){
+  const items = (S.schedule || []).filter(x => x && team(x.a) && team(x.b) && okDate(x.date))
+    .sort((x, y) => (x.date + (x.time || '')).localeCompare(y.date + (y.time || '')));
+  $('schWrap').hidden = !items.length && !canWrite;
+  $('schList').innerHTML = items.length ? items.map(x => `<li><div class="card sch ${x.date < today() ? 'past' : ''}">
+      <div class="when"><b>${esc(fmtDay(x.date))}</b>${fmtTime(x.time) ? `<span>${esc(fmtTime(x.time))}</span>` : ''}</div>
+      <div class="who">${tic(x.a)}${tn(x.a)}<span class="vs2">vs</span>${tic(x.b)}${tn(x.b)}${x.note ? `<p class="legend">${esc(String(x.note).slice(0, 40))}</p>` : ''}</div>
+      <button class="gold" data-schplay="${esc(x.id)}">▶ Play</button><button class="warn w" data-schdel="${esc(x.id)}" aria-label="Remove from schedule">✕</button></div></li>`).join('')
+    : '<li class="legend">Nothing scheduled yet. Tap “+ Schedule game” to add one.</li>';
+}
+$('schNew').addEventListener('click', () => {
+  if (needTeams()) return;
+  const opts = '<option value="">Pick team</option>' + [...S.teams].sort((a,b) => a.name.localeCompare(b.name)).map(t => `<option value="${esc(t.id)}">${optL(t)}</option>`).join('');
+  $('schA').innerHTML = opts; $('schB').innerHTML = opts;
+  $('schDate').value = today(); $('schTime').value = ''; $('schNote').value = ''; $('schMsg').textContent = '';
+  openDlg('schDlg');
+});
+$('schCancel').addEventListener('click', () => closeDlg('schDlg'));
+$('schForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const a = $('schA').value, b = $('schB').value, date = $('schDate').value, time = $('schTime').value;
+  if (!a || !b) return msg('schMsg', 'Pick both teams.');
+  if (a === b) return msg('schMsg', 'Pick two different teams.');
+  if (!okDate(date)) return msg('schMsg', 'Pick a day.');
+  try { await put('schedule', { id: mkId(), a, b, date, time: /^\d{2}:\d{2}$/.test(time) ? time : '', note: $('schNote').value.trim().slice(0, 40) }); closeDlg('schDlg'); }
+  catch(err) { msg('schMsg', why(err, 'Couldn’t save — try again.')); }
+});
+$('schList').addEventListener('click', e => {
+  const pl = e.target.closest('[data-schplay]');
+  if (pl) { const x = (S.schedule || []).find(y => y.id === pl.dataset.schplay); if (x) choose({ a: x.a, b: x.b, sid: x.id }); return; }
+  const dl = e.target.closest('[data-schdel]');
+  if (dl) armed(dl, async () => { try { await del('schedule', dl.dataset.schdel); } catch(err){} });
+});
+
+// ---------- live scoreboard for a second screen ----------
+// The scorekeeper running a live game writes its state to live/current; anyone can watch at #watch.
+let W = null, wPrevKey = '', liveWasOn = false;
+const LIVE_FRESH = 3 * 3600e3;
+function broadcastLive(){
+  if (!db || !canWrite || !L || (L.stage !== 'play' && L.stage !== 'over')) return;
+  clearTimeout(broadcastLive.t);
+  broadcastLive.t = setTimeout(() => {
+    if (!L || (L.stage !== 'play' && L.stage !== 'over')) return;
+    liveWasOn = true;
+    db.doc('live/current').set({ stage: L.stage, a: L.a, b: L.b, sa: L.sa, sb: L.sb, period: L.period, len: L.len, left: Math.max(0, leftNow()), running: !!L.running,
+      at: Date.now(), tid: L.tid || null, goals: (L.goals || []).slice(-30), by: skName || '' }).catch(() => {});
+  }, 250);
+}
+function liveEnd(g){
+  if (!db || !canWrite || !liveWasOn) return;
+  liveWasOn = false; clearTimeout(broadcastLive.t);
+  db.doc('live/current').set(g ? { stage: 'final', a: g.a, b: g.b, sa: g.sa, sb: g.sb, ot: !!g.ot, period: 3, left: 0, running: false, at: Date.now(), goals: (g.goals || []).slice(-30), by: skName || '' }
+    : { stage: 'off', at: Date.now() }).catch(() => {});
+}
+const wLeft = () => W.running ? Math.max(0, W.left - (Date.now() - W.at) / 1000) : W.left;
+const wFresh = () => W && Date.now() - W.at < (W.stage === 'final' ? 20 * 60e3 : LIVE_FRESH);
+const wOn = () => wFresh() && (W.stage === 'play' || W.stage === 'over');
+function renderWatchBtn(){ $('watchBtn').hidden = !wOn() || !!(L && L.stage !== 'setup'); }
+function onLiveDoc(v){
+  const prev = W;
+  W = v && typeof v === 'object' ? { stage: String(v.stage || ''), a: String(v.a || ''), b: String(v.b || ''), sa: N(v.sa), sb: N(v.sb), period: N(v.period) || 1,
+    left: Math.max(0, +v.left || 0), running: !!v.running, at: +v.at || 0, ot: !!v.ot, by: String(v.by || '').slice(0, 20),
+    goals: Array.isArray(v.goals) ? v.goals.filter(x => x && typeof x === 'object').slice(-30) : [] } : null;
+  renderWatchBtn();
+  if ($('watch').hidden || !W) return;
+  const key = W.a + '|' + W.b;
+  if (prev && wPrevKey === key && W.sa + W.sb > prev.sa + prev.sb) {           // a goal on the other device
+    const last = W.goals[W.goals.length - 1] || {}, tid = W.sa > prev.sa ? W.a : W.b, t = team(tid), el = $('cele');
+    el.style.setProperty('--c', okColor(t && t.color));
+    el.innerHTML = `<div><div class="e">🚨</div><b>GOAL!</b><span>${esc(last.p ? pname(last.p) + ' · ' : '')}${tn(tid)}</span></div>`;
+    el.hidden = false; horn(1.3); clearTimeout(celebrate.t); celebrate.t = setTimeout(() => el.hidden = true, 2200);
+  } else if (prev && prev.stage !== 'final' && W.stage === 'final' && W.sa !== W.sb) {
+    const w = W.sa > W.sb ? W.a : W.b;
+    celebrate(w, `${tname(w).toUpperCase()} WIN!`, `${Math.max(W.sa, W.sb)}–${Math.min(W.sa, W.sb)}${W.ot ? ' in OT' : ''} over ${tname(w === W.a ? W.b : W.a)}`, false);
+  }
+  wPrevKey = key; drawWatch();
+}
+function drawWatch(){
+  const wv = $('wv');
+  const top = `<div class="lvtop"><span class="t">${esc(S.name)} · ${wFresh() && W.stage === 'final' ? 'Final' : wOn() ? '🔴 Live' : 'Scoreboard'}</span>${AC && AC.state === 'running' ? '' : '<button id="wSnd">🔊 Sound on</button>'}<button id="wX">Close</button></div>`;
+  if (!wFresh() || W.stage === 'off' || !team(W.a) || !team(W.b)) {
+    wv.innerHTML = top + `<div class="lsetup"><div class="card"><h2 style="color:#fff">No game on right now</h2><p class="legend" style="color:#cbb8ad">Leave this screen open. When a scorekeeper starts a live game, the score shows up here by itself.</p></div></div>`;
+    return;
+  }
+  const A = team(W.a), B = team(W.b), done = W.stage === 'over' || W.stage === 'final', left = done ? 0 : wLeft();
+  const last = W.goals[W.goals.length - 1];
+  const side = (T, id, sc) => `<div class="lvs" style="--c:${okColor(T.color)}"><div style="font-size:48px">${okIcon(T.icon)}</div><div class="n">${tn(id)}</div><div class="sc">${sc}</div></div>`;
+  wv.innerHTML = top + `<div class="clock"><div class="per">${done ? 'Final' + (W.period > 3 || W.ot ? ' / OT' : '') : perName(W.period) + (W.running ? '' : ' · paused')}</div><div class="tm ${left <= 10 && !done ? 'low' : ''}" id="wTm">${fmtClock(left)}</div></div>
+    <div class="lvb">${side(A, W.a, W.sa)}${side(B, W.b, W.sb)}</div>
+    <div class="lvc"><div class="wlast">${last ? 'Last goal: ' + esc(last.p ? pname(last.p) + ' · ' : '') + esc(tname(last.t)) : 'No goals yet'}${W.by ? ' · scorekeeper ' + esc(W.by) : ''}</div></div>`;
+}
+function openWatch(){
+  try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === 'suspended') AC.resume(); } catch(e){}
+  $('watch').hidden = false; document.body.style.overflow = 'hidden'; wPrevKey = W ? W.a + '|' + W.b : ''; drawWatch();
+}
+function closeWatch(){ $('watch').hidden = true; document.body.style.overflow = ''; if (location.hash === '#watch') location.hash = 'standings'; }
+$('watchBtn').addEventListener('click', () => { location.hash = 'watch'; });
+$('wv').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.id === 'wX') closeWatch();
+  if (b.id === 'wSnd') { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); AC.resume().then(() => drawWatch()); horn(.4); } catch(e){} }
+});
+const watchRoute = () => { if (location.hash === '#watch') openWatch(); else if (!$('watch').hidden) { $('watch').hidden = true; document.body.style.overflow = ''; } };
+window.addEventListener('hashchange', watchRoute);
+setInterval(() => { if (!$('watch').hidden && W && W.running && W.stage === 'play') { const el = $('wTm'); if (el) { const l = wLeft(); el.textContent = fmtClock(l); el.classList.toggle('low', l <= 10); } } renderWatchBtn(); }, 250);
+
 // ---------- backup (export / import) ----------
-const BK_COLLS = ['teams', 'games', 'tournaments'];
+const BK_COLLS = ['teams', 'games', 'tournaments', 'schedule'];
 function backupObj(){
-  return { _format: "Knee Hockey League backup v3 — same shape as the app's localStorage key 'kh-locos-v3' (S object). Firestore: teams/{id}, games/{id}, tournaments/{id}, meta/league = {name, seasons, cur}.",
-    exportedAt: today(), name: S.name, cur: S.cur, seasons: S.seasons, teams: S.teams, games: S.games, tournaments: S.tournaments };
+  return { _format: "Knee Hockey League backup v3 — same shape as the app's localStorage key 'kh-locos-v3' (S object). Firestore: teams/{id}, games/{id}, tournaments/{id}, schedule/{id}, meta/league = {name, seasons, cur}.",
+    exportedAt: today(), name: S.name, cur: S.cur, seasons: S.seasons, teams: S.teams, games: S.games, tournaments: S.tournaments, schedule: S.schedule || [] };
 }
 $('bkExport').addEventListener('click', () => {
   const blob = new Blob([JSON.stringify(backupObj(), null, 2)], { type: 'application/json' });
@@ -1192,9 +1344,12 @@ let fbState = FBC ? 'loading' : 'off';   // off | loading | live | fail
 if (FBC) { loadLocal(CKEY); canWrite = false; } else loadLocal();
 try { const l = JSON.parse(localStorage.getItem(LKEY)); if (l && l.stage) { L = l; if (L.running) { L.left = leftNow(); L.running = false; } $('live').hidden = false; drawLive(); startTimer(); } } catch(e){}
 function pill(){
-  $('sync').textContent = fbState === 'off' ? 'Saved on this device' : fbState === 'loading' ? 'Connecting…' : fbState === 'fail' ? 'Offline · view only'
-    : canWrite ? 'Live ✓ · Scorekeeper' : 'Live ✓ · 🔒 View only';
+  const on = navigator.onLine !== false, who = canWrite ? 'Scorekeeper' : '🔒 View only';
+  $('sync').textContent = fbState === 'off' ? 'Saved on this device' : fbState === 'loading' ? (on ? 'Connecting…' : '📴 Offline') : fbState === 'fail' ? 'Offline · view only'
+    : pending ? (on ? 'Saving… · ' + who : `📴 ${pending} to sync · ${who}`)
+    : (on ? 'Live ✓ · ' : '📴 Offline · ') + who;
 }
+addEventListener('online', () => pill()); addEventListener('offline', () => pill());
 const SK_DOMAIN = '@knee-hockey.invalid';   // plain scorekeeper names become name@knee-hockey.invalid (a reserved, never-real domain)
 const skWho = u => { const e = (u && u.email) || ''; return e.endsWith(SK_DOMAIN) ? e.slice(0, -SK_DOMAIN.length) : e; };
 function renderSK(){
@@ -1207,7 +1362,8 @@ function renderSK(){
     : canWrite ? `Signed in as ${skWho(fbUser)}. You can save games.`
     : `${skWho(fbUser) || 'This account'} isn’t a scorekeeper yet. Ask Alex to add it.`;
 }
-setRO(); render(); show(); pill();
+if (L && (L.stage === 'play' || L.stage === 'over')) liveWasOn = true;
+setRO(); render(); show(); pill(); watchRoute();
 startTimer();
 
 // Firestore adapter: same collection().doc().set()/delete()/onSnapshot() surface the app already uses.
@@ -1221,7 +1377,7 @@ function fsAdapter(F, fdb){
 }
 const withTimeout = (p, ms) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error('timeout')), ms))]);
 let cacheT = null;
-const saveCache = () => { clearTimeout(cacheT); cacheT = setTimeout(() => { try { localStorage.setItem(CKEY, JSON.stringify({ name: S.name, seasons: S.seasons, cur: S.cur, teams: S.teams, games: S.games, tournaments: S.tournaments })); } catch(e){} }, 500); };
+const saveCache = () => { clearTimeout(cacheT); cacheT = setTimeout(() => { try { localStorage.setItem(CKEY, JSON.stringify({ name: S.name, seasons: S.seasons, cur: S.cur, teams: S.teams, games: S.games, tournaments: S.tournaments, schedule: S.schedule || [] })); } catch(e){} }, 500); };
 
 (async () => {
   if (!FBC) return;
@@ -1229,25 +1385,32 @@ const saveCache = () => { clearTimeout(cacheT); cacheT = setTimeout(() => { try 
     // Loaded lazily, so a Firebase outage never blanks the page: it just stays view-only on cached data.
     const [A, F, U] = await withTimeout(Promise.all(['app', 'firestore', 'auth'].map(m => import(FB_URL + 'firebase-' + m + '.js'))), 15000);
     const app = A.initializeApp(FBC);
-    const fdb = F.initializeFirestore(app, { ignoreUndefinedProperties: true });
+    let fdb;
+    try { fdb = F.initializeFirestore(app, { ignoreUndefinedProperties: true, localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) }); }
+    catch(e) { fdb = F.initializeFirestore(app, { ignoreUndefinedProperties: true }); }   // e.g. private browsing: memory only
     const auth = U.getAuth(app);
     FBX = { F, U, fdb, auth };
     db = fsAdapter(F, fdb);
     const got = {};
     const timer = setTimeout(() => { if (fbState !== 'live') $('sync').textContent = 'Can’t reach league data yet'; }, 10000);
     const fail = () => { clearTimeout(timer); $('sync').textContent = 'Sync paused — reopen page'; };
-    const sub = coll => db.collection(coll).onSnapshot(s => {
+    const sub = (coll, onErr = fail) => db.collection(coll).onSnapshot(s => {
       S[coll] = s.docs.map(x => x.data()).filter(x => x && x.id);
-      if (!s.metadata.fromCache) got[coll] = 1;
+      got[coll] = 1;
       if (got.teams && got.games && got.tournaments && fbState !== 'live') { clearTimeout(timer); fbState = 'live'; pill(); renderSK(); }
       saveCache(); render(); if (L && L.stage === 'setup') drawLive();
-    }, fail);
-    sub('teams'); sub('games'); sub('tournaments');
+    }, onErr);
+    sub('teams'); sub('games'); sub('tournaments'); sub('schedule', () => {});   // schedule is optional: never pause sync over it
+    db.doc('live/current').onSnapshot(x => onLiveDoc(x.exists ? x.data() : null), () => {});
     db.doc('meta/league').onSnapshot(x => { const v = x.exists && x.data(); if (v) { if (v.name) S.name = String(v.name); const ns = normSeasons(v.seasons); if (ns.length) S.seasons = ns; if (v.cur) S.cur = String(v.cur); if (!seasonObj(S.cur)) S.cur = S.seasons[0].id; saveCache(); render(); } }, () => {});
     U.onAuthStateChanged(auth, async u => {
-      fbUser = u; let ok = false;
-      if (u && u.email) { try { ok = (await F.getDoc(F.doc(fdb, 'scorekeepers', u.email.toLowerCase()))).exists(); } catch(e) { ok = false; } }
-      canWrite = ok; setRO(); pill(); renderSK();
+      fbUser = u; let ok = false, nm = '';
+      const SKC = 'kh-sk-v1';
+      if (u && u.email) {
+        try { const d = await F.getDoc(F.doc(fdb, 'scorekeepers', u.email.toLowerCase())); ok = d.exists(); nm = ok ? String((d.data() || {}).name || skWho(u)).slice(0, 20) : ''; try { localStorage.setItem(SKC, JSON.stringify(ok ? { uid: u.uid, name: nm } : {})); } catch(e){} }
+        catch(e) { try { const c = JSON.parse(localStorage.getItem(SKC)) || {}; if (c.uid === u.uid) { ok = true; nm = String(c.name || '').slice(0, 20); } } catch(e2){} }   // offline: trust the last answer for this same account
+      }
+      canWrite = ok; skName = nm; setRO(); pill(); renderSK(); render();
     });
     U.getRedirectResult(auth).catch(() => {});
   } catch(e) { db = null; FBX = null; canWrite = false; fbState = 'fail'; setRO(); pill(); renderSK(); }

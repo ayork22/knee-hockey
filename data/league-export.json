@@ -1,77 +1,77 @@
 {
-  "_format": "Knee Hockey League backup v3 — same shape as the app's localStorage key 'kh-locos-v3' (S object). Firestore: teams/{id}, games/{id}, tournaments/{id}, meta/league = {name, seasons, cur}.",
-  "exportedAt": "2026-11-25",
+  "_format": "Knee Hockey League backup v3 — same shape as the app's localStorage key 'kh-locos-v3' (S object). Firestore: teams/{id}, games/{id}, tournaments/{id}, schedule/{id}, meta/league = {name, seasons, cur}.",
+  "exportedAt": "2026-11-26",
   "name": "Knee Hockey League",
   "cur": "2026–27 Season",
   "seasons": [
     {
       "id": "2026–27 Season",
-      "name": "2026–27 Season",
-      "start": "",
-      "end": "",
-      "teams": [],
-      "w": 2,
-      "otl": 1,
-      "t": 1,
       "base": {
         "aliens": {
-          "w": 1,
+          "ga": 0,
+          "gf": 0,
           "l": 0,
           "otl": 0,
           "t": 0,
-          "gf": 0,
-          "ga": 0
+          "w": 1
         },
         "pirates": {
-          "w": 0,
+          "ga": 0,
+          "gf": 0,
           "l": 1,
           "otl": 0,
           "t": 0,
-          "gf": 0,
-          "ga": 0
+          "w": 0
         }
-      }
+      },
+      "end": "",
+      "name": "2026–27 Season",
+      "otl": 1,
+      "start": "",
+      "t": 1,
+      "teams": [],
+      "w": 2
     }
   ],
   "teams": [
     {
       "id": "aliens",
-      "name": "Aliens",
-      "owner": "Tucker",
       "color": "#1d7a45",
       "icon": "👽",
+      "name": "Aliens",
+      "owner": "Tucker",
       "players": []
     },
     {
       "id": "dragons",
-      "name": "Dragons",
-      "owner": "Murphy",
       "color": "#aa3d32",
       "icon": "🐉",
+      "name": "Dragons",
+      "owner": "Murphy",
       "players": []
     },
     {
       "id": "pirates",
-      "name": "Pirates",
-      "owner": "Jaxon",
       "color": "#222222",
       "icon": "🏴‍☠️",
+      "name": "Pirates",
+      "owner": "Jaxon",
       "players": []
     },
     {
       "id": "scorpions",
-      "name": "Scorpions",
-      "owner": "Knox",
       "color": "#6f2da8",
       "icon": "🦂",
+      "name": "Scorpions",
+      "owner": "Knox",
       "players": []
     },
     {
       "id": "wolfs",
-      "name": "Wolfs",
-      "owner": "Vinnie",
       "color": "#7a8a99",
       "icon": "🐺",
+      "name": "Wolfs",
+      "owner": "Vinnie",
       "players": []
     }
   ],
@@ -80,98 +80,142 @@
       "id": "hist-0705-pir-ali",
       "a": "pirates",
       "b": "aliens",
+      "date": "2026-07-05",
+      "goals": [],
+      "ot": false,
       "sa": 6,
       "sb": 5,
-      "ot": false,
-      "date": "2026-07-05",
-      "ts": "2026-07-05T18:00:00.000Z",
       "season": "2026–27 Season",
-      "goals": []
+      "ts": "2026-07-05T18:00:00.000Z"
     },
     {
       "id": "hist-0809-sco-pir",
       "a": "scorpions",
       "b": "pirates",
+      "date": "2026-08-09",
+      "goals": [],
+      "ot": false,
       "sa": 4,
       "sb": 5,
-      "ot": false,
-      "date": "2026-08-09",
-      "ts": "2026-08-09T18:00:00.000Z",
       "season": "2026–27 Season",
-      "goals": []
+      "ts": "2026-08-09T18:00:00.000Z"
     },
     {
       "id": "hist-1101-pir-ali",
       "a": "pirates",
       "b": "aliens",
+      "date": "2026-11-01",
+      "goals": [],
+      "ot": false,
       "sa": 5,
       "sb": 3,
-      "ot": false,
-      "date": "2026-11-01",
-      "ts": "2026-11-01T18:00:00.000Z",
       "season": "2026–27 Season",
-      "goals": []
+      "ts": "2026-11-01T18:00:00.000Z"
     },
     {
       "id": "hist-1101-pir-wol",
       "a": "pirates",
       "b": "wolfs",
+      "date": "2026-11-01",
+      "goals": [],
+      "ot": false,
       "sa": 5,
       "sb": 4,
-      "ot": false,
-      "date": "2026-11-01",
-      "ts": "2026-11-01T18:10:00.000Z",
       "season": "2026–27 Season",
-      "goals": []
+      "ts": "2026-11-01T18:10:00.000Z"
     },
     {
       "id": "hist-1108-pir-dra",
       "a": "pirates",
       "b": "dragons",
+      "date": "2026-11-08",
+      "goals": [],
+      "ot": false,
       "sa": 5,
       "sb": 4,
-      "ot": false,
-      "date": "2026-11-08",
-      "ts": "2026-11-08T18:00:00.000Z",
       "season": "2026–27 Season",
-      "goals": []
+      "ts": "2026-11-08T18:00:00.000Z"
     },
     {
       "id": "hist-1108-dra-pir",
       "a": "dragons",
       "b": "pirates",
+      "date": "2026-11-08",
+      "goals": [],
+      "ot": false,
       "sa": 5,
       "sb": 4,
-      "ot": false,
-      "date": "2026-11-08",
-      "ts": "2026-11-08T18:10:00.000Z",
       "season": "2026–27 Season",
-      "goals": []
+      "ts": "2026-11-08T18:10:00.000Z"
     },
     {
       "id": "hist-1108-dra-ali",
       "a": "dragons",
       "b": "aliens",
+      "date": "2026-11-08",
+      "goals": [],
+      "ot": false,
       "sa": 5,
       "sb": 3,
-      "ot": false,
-      "date": "2026-11-08",
-      "ts": "2026-11-08T18:20:00.000Z",
       "season": "2026–27 Season",
-      "goals": []
+      "ts": "2026-11-08T18:20:00.000Z"
     },
     {
       "id": "hist-1111-ali-pir",
       "a": "aliens",
       "b": "pirates",
+      "date": "2026-11-11",
+      "goals": [],
+      "ot": false,
       "sa": 4,
       "sb": 5,
-      "ot": false,
-      "date": "2026-11-11",
-      "ts": "2026-11-11T18:00:00.000Z",
       "season": "2026–27 Season",
-      "goals": []
+      "ts": "2026-11-11T18:00:00.000Z"
+    },
+    {
+      "id": "mwwx68vtunmnq0",
+      "a": "wolfs",
+      "b": "pirates",
+      "date": "2026-11-25",
+      "goals": [],
+      "ot": false,
+      "sa": 5,
+      "sb": 4,
+      "season": "2026–27 Season",
+      "ts": "2026-11-26T02:14:41.274Z"
+    },
+    {
+      "id": "mwwx8ri5klttlq",
+      "a": "aliens",
+      "b": "dragons",
+      "date": "2026-11-25",
+      "goals": [],
+      "k": 1,
+      "ot": false,
+      "r": 0,
+      "sa": 3,
+      "sb": 5,
+      "season": "2026–27 Season",
+      "tid": "mwwx8a36wwvqud",
+      "ts": "2026-11-26T02:16:38.717Z"
     }
   ],
-  "tournaments": []
+  "tournaments": [
+    {
+      "id": "mwwx8a36wwvqud",
+      "adv": 0,
+      "date": "2026-11-25",
+      "format": "ko",
+      "name": "Thanksgiving cup",
+      "season": "2026–27 Season",
+      "teams": [
+        "pirates",
+        "aliens",
+        "dragons",
+        "wolfs"
+      ],
+      "ts": "2026-11-26T02:16:16.146Z"
+    }
+  ],
+  "schedule": []
 }

@@ -31,7 +31,9 @@ It was built as a Claude.ai artifact and is now moving to **GitHub Pages**, with
   - The `// ---------- boot ----------` IIFE at the bottom: `window.claude.use('db')` is the Claude artifact runtime. It subscribes with `onSnapshot` to `teams`, `games` and `tournaments` and to the doc `meta/league`, replaces `S[coll]` on each snapshot, and updates the `#sync` pill ("Live ✓", "Saved on this device", and so on).
   - On GitHub Pages `window.claude` doesn't exist, so the app falls back to localStorage (per-device) mode. It works on day one, just not shared.
 - **Replace that boot block with Firestore.** The data shapes and paths already match Firestore exactly (`teams/{id}`, `games/{id}`, `tournaments/{id}`, `meta/league`), and the `db.collection(x).doc(id).set/delete` and `onSnapshot` calls in `put`/`del`/`setMeta` follow Firestore v8-style naming. Use the modular SDK from `https://www.gstatic.com/firebasejs/<pinned version>/` as ES modules, wrapped in a tiny adapter with the same `collection().doc().set()/delete()/onSnapshot()` surface, so `put`/`del`/`setMeta` barely change. Load the SDK lazily so a Firebase outage doesn't blank the page.
-- Live-game state (clock, score in progress) stays in localStorage under `kh-live-v1`, on purpose: it's per-device, and only the finished game gets written.
+- Live-game state (clock, score in progress) stays in localStorage under `kh-live-v1`, on purpose: it's per-device, and only the finished game gets written. It's also mirrored to `live/current` for the second-screen scoreboard (`#watch`).
+- Firestore uses its persistent offline cache: writes apply locally at once and sync later (`track()` in the storage layer). The `#sync` pill shows offline / to-sync counts.
+- `.github/workflows/nightly-backup.yml` runs `scripts/backup.py` nightly (public REST reads) and commits `data/league-export.json` only when the league changed.
 
 ## Data model
 
@@ -47,6 +49,10 @@ games/{id}    { id, a, b (team ids), sa, sb (scores), ot:bool, date, ts (ISO, or
                 tid? (tournament id), stage?:'rr' (round robin), r?/k? (bracket round/slot) }
 tournaments/{id} { id, name, teams:[ids in seed order], format:'ko'|'rr', adv:0|2|4 (rr playoff size),
                    date, ts, season }
+schedule/{id}  { id, a, b (team ids), date:'YYYY-MM-DD', time:'HH:MM'|'', note }   // upcoming games; deleted when played
+live/current   { stage:'play'|'over'|'final'|'off', a, b, sa, sb, period, len, left (secs at `at`), running,
+                 at (ms epoch), goals, by }   // written by the scorekeeper's live game; read by #watch
+games/{id}.by  scorekeeper name (from scorekeepers/{email}.name) who last saved it
 ```
 
 The bracket is never stored. It's derived from the tournament's seed order plus the games that have `tid`/`r`/`k` (see `bracketOf`).

@@ -19,6 +19,8 @@ service cloud.firestore {
     match /games/{id}       { allow read: if true; allow write: if scorekeeper(); }
     match /tournaments/{id} { allow read: if true; allow write: if scorekeeper(); }
     match /meta/{id}        { allow read: if true; allow write: if scorekeeper(); }
+    match /schedule/{id}    { allow read: if true; allow write: if scorekeeper(); }
+    match /live/{id}        { allow read: if true; allow write: if scorekeeper(); }   // second-screen scoreboard
 
     // Each person can only check their own entry. Nobody can list or change it from the site.
     match /scorekeepers/{email} {
