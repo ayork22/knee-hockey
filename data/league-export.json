@@ -1,6 +1,6 @@
 {
   "_format": "Knee Hockey League backup v3 — same shape as the app's localStorage key 'kh-locos-v3' (S object). Firestore: teams/{id}, games/{id}, tournaments/{id}, schedule/{id}, meta/league = {name, seasons, cur}.",
-  "exportedAt": "2026-11-26",
+  "exportedAt": "2026-11-27",
   "name": "Knee Hockey League",
   "cur": "2026–27 Season",
   "seasons": [
@@ -215,6 +215,21 @@
         "wolfs"
       ],
       "ts": "2026-11-26T02:16:16.146Z"
+    },
+    {
+      "id": "mwy5v82uzh4css",
+      "adv": 0,
+      "date": "2026-11-26",
+      "format": "ko",
+      "name": "Candy Cane Classic",
+      "season": "2026–27 Season",
+      "teams": [
+        "pirates",
+        "wolfs",
+        "aliens",
+        "scorpions"
+      ],
+      "ts": "2026-11-26T23:05:49.734Z"
     }
   ],
   "schedule": []
